@@ -1,9 +1,7 @@
 package sample;
 
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -13,12 +11,15 @@ import javafx.stage.Stage;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Random;
 import java.util.Scanner;
 
 public class Main extends Application {
     Label cardsLeftLabel;
     Label drawLabel;
     Button drawBtn;
+    Button shuffleBtn;
+    Button resetBtn;
 
     Scene scene;
     VBox vBox;
@@ -39,13 +40,33 @@ public class Main extends Application {
         // Button draw
         drawBtn = new Button("Draw");
         drawBtn.setOnAction(e -> {
-            System.out.println(drawCard().toSuit());
-            // updateDrawLabel();
+            StringBuilder cardString = new StringBuilder(drawCard().toSuit());
+            updateDrawLabel(cardString);
         });
+
+        // Button shuffle remaining cards
+        shuffleBtn = new Button("Shuffle");
+        shuffleBtn.setOnAction(e -> {
+            shuffle();
+            drawLabel.setVisible(true);
+        });
+
+        // Button reset deck
+        resetBtn = new Button("Reset");
+        resetBtn.setOnAction(e -> {
+            try {
+                reset();
+            } catch (FileNotFoundException fileNotFoundException) {
+                fileNotFoundException.printStackTrace();
+            }
+        });
+
+        // shuffle deck
+        shuffle();
 
         // Vbox
         vBox = new VBox(8);
-        vBox.getChildren().addAll(cardsLeftLabel, drawLabel, drawBtn);
+        vBox.getChildren().addAll(cardsLeftLabel, drawLabel, drawBtn, shuffleBtn, resetBtn);
         vBox.setAlignment(Pos.CENTER);
 
         // Scene
@@ -56,7 +77,27 @@ public class Main extends Application {
         System.out.println(deckList);
     }
 
-    private void updateDrawLabel(Card card) {
+    private void shuffle() {
+        ArrayList<String> tempDeck = new ArrayList<>();
+        Random rand = new Random();
+        int deckSize = deckList.size();
+        for (int i = 0; i < deckSize; i++) {
+            int randomNum = rand.nextInt(deckList.size());
+            String card = deckList.remove(randomNum);
+            tempDeck.add(card);
+        }
+        deckList = tempDeck;
+        drawLabel.setText("Deck shuffled");
+        System.out.println(deckList);
+    }
+
+    private void reset() throws FileNotFoundException {
+        deckList = loadDeck(new File("src/sample/cards.txt"));
+        shuffle();
+        cardsLeftLabel.setText("Cards Left: " + deckList.size());
+    }
+
+    private void updateDrawLabel(StringBuilder card) {
         drawLabel.setText("You Drew: " + card);
         drawLabel.setVisible(true);
     }
