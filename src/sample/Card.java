@@ -2,11 +2,17 @@ package sample;
 
 public class Card {
     String cardString;
+
     // Card is in the form (number)(suit) eg. Ace of Diamonds = ad.
     public Card(String card) {
         this.cardString = card;
     }
 
+    /*
+    Instead of creating this method, I could have just copied and pasted the
+    symbol of the suits into my cards.txt file. Converting the suits into the
+    icons/emojis would have been avoided.
+     */
     public StringBuilder toSuit() {
         // Position 1 of the string is the first letter of the suit.
         String number;
