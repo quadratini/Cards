@@ -100,7 +100,7 @@ public class Main extends Application {
             }
         });
 
-        // Button draw
+        // Button HIT
         hitBtn = new Button("Hit");
         hitBtn.setOnAction(e -> {
             Card card = drawCard();
@@ -114,6 +114,12 @@ public class Main extends Application {
                 hitBtn.setDisable(true);
                 standBtn.setDisable(true);
                 startBtn.setDisable(true);
+                computerHandLabel.setText("Dealer's Hand: ");
+                for (int i = 0; i < computerHand.getSize(); i++) {
+                    computerHandLabel.setText(computerHandLabel.getText() + computerHand.getCards().get(i).toSuit() + " ");
+                }
+                computerHand.getSum();
+                computerSumLabel.setText("Sum: " + computerHand.getSum());
             }
         });
 
@@ -160,7 +166,7 @@ public class Main extends Application {
         vBox.setPadding(new Insets(10, 0, 20, 0));
 
         // Scene
-        scene = new Scene(vBox, 600, 400);
+        scene = new Scene(vBox, 450, 250);
 
         stage.setScene(scene);
         stage.show();
