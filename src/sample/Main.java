@@ -1,8 +1,6 @@
 package sample;
 
 import javafx.application.Application;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -23,6 +21,8 @@ public class Main extends Application {
     Label hitLabel;
     Label playerHandLabel;
     Label computerHandLabel;
+    Label playerSumLabel;
+    Label computerSumLabel;
     Button hitBtn;
     Button resetBtn;
     Button standBtn;
@@ -30,6 +30,8 @@ public class Main extends Application {
 
     Scene scene;
     VBox vBox;
+    VBox playerVBox;
+    VBox computerVBox;
     HBox hBox;
 
     ArrayList<String> deckList = new ArrayList<>();
@@ -48,12 +50,45 @@ public class Main extends Application {
         hitLabel = new Label("You Drew: " + "card");
         hitLabel.setVisible(false);
         playerHandLabel = new Label("Your Hand: ");
-        computerHandLabel = new Label("Computer's Hand: ");
+        computerHandLabel = new Label("Dealer's Hand: ");
+        playerSumLabel = new Label("Sum: ");
+        computerSumLabel = new Label("Sum: ");
 
         // Button Start Game
         startBtn = new Button("Start");
         startBtn.setOnAction(e -> {
+            // player starts the game with 2 cards.
+            // the cards alternate between each player (player -> computer -> player ...etc)
+            Card playerCard1 = drawCard();
+            playerHand.add(playerCard1);
+            Card computerCard1 = drawCard();
+            computerHand.add(computerCard1);
+            Card playerCard2 = drawCard();
+            playerHand.add(playerCard2);
+            Card computerCard2 = drawCard();
+            computerHand.add(computerCard2);
 
+            playerHandLabel.setText("Your Hand: " + playerCard1.toSuit() + " " + playerCard2.toSuit() + " ");
+            computerHandLabel.setText("Dealer's Hand: " + computerCard1.toSuit() + " " + computerCard2.toSuit() + " ");
+
+            startBtn.setVisible(false);
+            hitLabel.setText("Dealer dealt you: " + playerCard1.toSuit() + " " + playerCard2.toSuit() + " ");
+            hitLabel.setVisible(true);
+
+            // idk why it has to be called before the label, it just updates slow?
+            System.out.println("player hand" + playerHand.getSum());
+            playerSumLabel.setText(playerSumLabel.getText() + playerHand.getSum());
+            System.out.println("playerhandAFTER" + playerHand.getSum());
+            System.out.println("playerhandAFTER" + playerHand.getSum());
+            System.out.println("playerhandAFTER" + playerHand.getSum());
+            System.out.println("computer hand" + computerHand.getSum());
+            computerSumLabel.setText(computerSumLabel.getText() + computerHand.getSum());
+            System.out.println("computerhandAFTER" + computerHand.getSum());
+            System.out.println("computerhandAFTER" + computerHand.getSum());
+            System.out.println("computerhandAFTER" + computerHand.getSum());
+            if (playerHand.getSum() == 21) {
+                hitLabel.setText("Blackjack. You won!");
+            }
         });
 
         // Button draw
@@ -61,9 +96,13 @@ public class Main extends Application {
         hitBtn.setOnAction(e -> {
             Card card = drawCard();
             StringBuilder cardString = new StringBuilder(card.toSuit());
-            updateDrawLabel(cardString);
+            updateHitLabel(cardString);
             playerHand.add(card);
             playerHandLabel.setText(playerHandLabel.getText() + cardString + " ");
+            playerSumLabel.setText("Sum: " + playerHand.getSum());
+            if (isBust(playerHand.getSum())) {
+                hitLabel.setText("You BUSTED!");
+            }
         });
 
         // Button stand
@@ -85,36 +124,54 @@ public class Main extends Application {
         // shuffle deck
         shuffle();
 
-        // HBox player and AI labels
+        // VBox for player
+        playerVBox = new VBox(8);
+        playerVBox.getChildren().addAll(playerHandLabel, playerSumLabel);
+
+        // VBox for computer
+        computerVBox = new VBox(8);
+        computerVBox.getChildren().addAll(computerHandLabel, computerSumLabel);
+
+        // HBox player and computer labels
         hBox = new HBox(10);
-        hBox.getChildren().addAll(playerHandLabel, computerHandLabel);
+        hBox.getChildren().addAll(playerVBox, computerVBox);
         hBox.setAlignment(Pos.CENTER);
 
         // Vbox outer VBox
         vBox = new VBox(8);
-        vBox.getChildren().addAll(cardsLeftLabel, hitLabel, hitBtn, standBtn, resetBtn, hBox);
+        vBox.getChildren().addAll(cardsLeftLabel, hitLabel, startBtn, hitBtn, standBtn, resetBtn, hBox);
         vBox.setAlignment(Pos.TOP_CENTER);
         vBox.setPadding(new Insets(10, 0, 20, 0));
 
         // Scene
-        scene = new Scene(vBox, 600, 200);
+        scene = new Scene(vBox, 600, 400);
 
         stage.setScene(scene);
         stage.show();
         System.out.println(deckList);
     }
 
+    private boolean isBust(int sum) {
+        return sum > 21;
+    }
+
     private void stand() {
         // player keeps cards, but the other person can stand or hit
-        while (computerHand.getSum() < playerHand.getSum()) {
+        while (computerHand.getSum() < 17) {
             Card card = drawCard();
             computerHand.add(card);
             computerHandLabel.setText(computerHandLabel.getText() + card.toSuit() + " ");
+            computerSumLabel.setText("Sum: " + computerHand.getSum());
         }
-    }
-
-    private void checkWinner() {
-
+        if (isBust(computerHand.getSum())) {
+            hitLabel.setText("Dealer BUSTED! You won!");
+        } else if (playerHand.getSum() > computerHand.getSum()) {
+            hitLabel.setText("You won!");
+        } else if (playerHand.getSum() == computerHand.getSum()) {
+            hitLabel.setText("It is a Draw.");
+        } else if (computerHand.getSum() > playerHand.getSum()) {
+            hitLabel.setText("You lost...");
+        }
     }
 
     private void shuffle() {
@@ -135,11 +192,16 @@ public class Main extends Application {
         shuffle();
         cardsLeftLabel.setText("Cards Left: " + deckList.size());
         playerHandLabel.setText("Your Hand: ");
-        computerHandLabel.setText("Computer's Hand: ");
-        // need to reset the players hands too the arrays
+        computerHandLabel.setText("Dealer's Hand: ");
+        playerSumLabel.setText("Sum: ");
+        computerSumLabel.setText("Sum: ");
+        playerHand.emptyCards();
+        computerHand.emptyCards();
+        startBtn.setVisible(true);
+        System.out.println(deckList);
     }
 
-    private void updateDrawLabel(StringBuilder card) {
+    private void updateHitLabel(StringBuilder card) {
         hitLabel.setText("You Drew: " + card);
         hitLabel.setVisible(true);
     }
