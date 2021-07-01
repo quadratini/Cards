@@ -4,13 +4,20 @@ import java.util.ArrayList;
 
 public class Hand {
     private ArrayList<Card> cards;
+    private int size;
 
     public Hand() {
         cards = new ArrayList<>();
+        this.size = 0;
     }
 
     public void add(Card card) {
         cards.add(card);
+        this.size++;
+    }
+
+    public ArrayList<Card> getCards() {
+        return cards;
     }
 
     public int getSum() {
@@ -35,8 +42,12 @@ public class Hand {
         return sum;
     }
 
+    public int getSize() {
+        return this.size;
+    }
 
     public void emptyCards() {
+        this.size = 0;
         cards.clear();
     }
 

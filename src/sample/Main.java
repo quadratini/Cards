@@ -1,6 +1,7 @@
 package sample;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -54,6 +55,7 @@ public class Main extends Application {
         playerSumLabel = new Label("Sum: ");
         computerSumLabel = new Label("Sum: ");
 
+
         // Button Start Game
         startBtn = new Button("Start");
         startBtn.setOnAction(e -> {
@@ -69,25 +71,32 @@ public class Main extends Application {
             computerHand.add(computerCard2);
 
             playerHandLabel.setText("Your Hand: " + playerCard1.toSuit() + " " + playerCard2.toSuit() + " ");
-            computerHandLabel.setText("Dealer's Hand: " + computerCard1.toSuit() + " " + computerCard2.toSuit() + " ");
+            computerHandLabel.setText("Dealer's Hand: " + computerCard1.toSuit() + " ? ");
 
-            startBtn.setVisible(false);
+            startBtn.setDisable(true);
             hitLabel.setText("Dealer dealt you: " + playerCard1.toSuit() + " " + playerCard2.toSuit() + " ");
             hitLabel.setVisible(true);
 
             // idk why it has to be called before the label, it just updates slow?
-            System.out.println("player hand" + playerHand.getSum());
+            playerHand.getSum();
+            computerHand.getSum();
             playerSumLabel.setText(playerSumLabel.getText() + playerHand.getSum());
-            System.out.println("playerhandAFTER" + playerHand.getSum());
-            System.out.println("playerhandAFTER" + playerHand.getSum());
-            System.out.println("playerhandAFTER" + playerHand.getSum());
-            System.out.println("computer hand" + computerHand.getSum());
-            computerSumLabel.setText(computerSumLabel.getText() + computerHand.getSum());
-            System.out.println("computerhandAFTER" + computerHand.getSum());
-            System.out.println("computerhandAFTER" + computerHand.getSum());
-            System.out.println("computerhandAFTER" + computerHand.getSum());
+            computerSumLabel.setText(computerSumLabel.getText() + " ? ");
             if (playerHand.getSum() == 21) {
                 hitLabel.setText("Blackjack. You won!");
+                hitBtn.setDisable(true);
+                standBtn.setDisable(true);
+                startBtn.setDisable(true);
+                computerHandLabel.setText("Dealer's Hand: ");
+                for (int i = 0; i < computerHand.getSize(); i++) {
+                    computerHandLabel.setText(computerHandLabel.getText() + computerHand.getCards().get(i).toSuit() + " ");
+                }
+                computerHand.getSum();
+                computerSumLabel.setText("Sum: " + computerHand.getSum());
+            } else {
+                startBtn.setDisable(true);
+                hitBtn.setDisable(false);
+                standBtn.setDisable(false);
             }
         });
 
@@ -102,6 +111,9 @@ public class Main extends Application {
             playerSumLabel.setText("Sum: " + playerHand.getSum());
             if (isBust(playerHand.getSum())) {
                 hitLabel.setText("You BUSTED!");
+                hitBtn.setDisable(true);
+                standBtn.setDisable(true);
+                startBtn.setDisable(true);
             }
         });
 
@@ -121,8 +133,12 @@ public class Main extends Application {
             }
         });
 
+        // INIT
         // shuffle deck
         shuffle();
+        // Disabled buttons since game did not start yet
+        hitBtn.setDisable(true);
+        standBtn.setDisable(true);
 
         // VBox for player
         playerVBox = new VBox(8);
@@ -157,9 +173,14 @@ public class Main extends Application {
 
     private void stand() {
         // player keeps cards, but the other person can stand or hit
+        computerHandLabel.setText("Dealer's Hand: ");
+        for (int i = 0; i < computerHand.getSize(); i++) {
+            computerHandLabel.setText(computerHandLabel.getText() + computerHand.getCards().get(i).toSuit() + " ");
+        }
         while (computerHand.getSum() < 17) {
             Card card = drawCard();
             computerHand.add(card);
+            computerHand.getSum();
             computerHandLabel.setText(computerHandLabel.getText() + card.toSuit() + " ");
             computerSumLabel.setText("Sum: " + computerHand.getSum());
         }
@@ -172,6 +193,9 @@ public class Main extends Application {
         } else if (computerHand.getSum() > playerHand.getSum()) {
             hitLabel.setText("You lost...");
         }
+        hitBtn.setDisable(true);
+        standBtn.setDisable(true);
+        startBtn.setDisable(true);
     }
 
     private void shuffle() {
@@ -197,7 +221,9 @@ public class Main extends Application {
         computerSumLabel.setText("Sum: ");
         playerHand.emptyCards();
         computerHand.emptyCards();
-        startBtn.setVisible(true);
+        startBtn.setDisable(false);
+        hitBtn.setDisable(true);
+        standBtn.setDisable(true);
         System.out.println(deckList);
     }
 
