@@ -17,8 +17,11 @@ an 11, depending on what is favorable for the player, etc.
 
 # Fun fact
 I got 3 Blackjacks in a row, which is a 1 in 10000 chance of happening. Lol
+
 1st pair: Ace of Spades & Jack of Diamonds
+
 2nd pair: Ace of Spades & King of Spades
+
 3rd pair: Queen of Hearts & Ace of Clubs
 
 ![alt text](assets/3_blackjack_1_10000.png)
