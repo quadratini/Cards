@@ -1,7 +1,6 @@
 package sample;
 
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -84,15 +83,7 @@ public class Main extends Application {
             computerSumLabel.setText(computerSumLabel.getText() + " ? ");
             if (playerHand.getSum() == 21) {
                 hitLabel.setText("Blackjack. You won!");
-                hitBtn.setDisable(true);
-                standBtn.setDisable(true);
-                startBtn.setDisable(true);
-                computerHandLabel.setText("Dealer's Hand: ");
-                for (int i = 0; i < computerHand.getSize(); i++) {
-                    computerHandLabel.setText(computerHandLabel.getText() + computerHand.getCards().get(i).toSuit() + " ");
-                }
-                computerHand.getSum();
-                computerSumLabel.setText("Sum: " + computerHand.getSum());
+                showComputerHand();
             } else {
                 startBtn.setDisable(true);
                 hitBtn.setDisable(false);
@@ -111,15 +102,7 @@ public class Main extends Application {
             playerSumLabel.setText("Sum: " + playerHand.getSum());
             if (isBust(playerHand.getSum())) {
                 hitLabel.setText("You BUSTED!");
-                hitBtn.setDisable(true);
-                standBtn.setDisable(true);
-                startBtn.setDisable(true);
-                computerHandLabel.setText("Dealer's Hand: ");
-                for (int i = 0; i < computerHand.getSize(); i++) {
-                    computerHandLabel.setText(computerHandLabel.getText() + computerHand.getCards().get(i).toSuit() + " ");
-                }
-                computerHand.getSum();
-                computerSumLabel.setText("Sum: " + computerHand.getSum());
+                showComputerHand();
             }
         });
 
@@ -173,23 +156,35 @@ public class Main extends Application {
         System.out.println(deckList);
     }
 
+    private void showComputerHand() {
+        hitBtn.setDisable(true);
+        standBtn.setDisable(true);
+        startBtn.setDisable(true);
+        computerHandLabel.setText("Dealer's Hand: ");
+        for (int i = 0; i < computerHand.getSize(); i++) {
+            computerHandLabel.setText(computerHandLabel.getText() + computerHand.getCards().get(i).toSuit() + " ");
+        }
+        computerHand.getSum();
+        computerSumLabel.setText("Sum: " + computerHand.getSum());
+    }
+
     private boolean isBust(int sum) {
         return sum > 21;
     }
 
     private void stand() {
         // player keeps cards, but the other person can stand or hit
-        computerHandLabel.setText("Dealer's Hand: ");
-        for (int i = 0; i < computerHand.getSize(); i++) {
-            computerHandLabel.setText(computerHandLabel.getText() + computerHand.getCards().get(i).toSuit() + " ");
-        }
         while (computerHand.getSum() < 17) {
             Card card = drawCard();
             computerHand.add(card);
-            computerHand.getSum();
-            computerHandLabel.setText(computerHandLabel.getText() + card.toSuit() + " ");
-            computerSumLabel.setText("Sum: " + computerHand.getSum());
         }
+        computerHandLabel.setText("Dealer's Hand: ");
+        int size = computerHand.getSize();
+        for (int i = 0; i < size; i++) {
+            computerHandLabel.setText(computerHandLabel.getText() + computerHand.getCards().get(i).toSuit() + " ");
+        }
+        computerHand.getSum();
+        computerSumLabel.setText("Sum: " + computerHand.getSum());
         if (isBust(computerHand.getSum())) {
             hitLabel.setText("Dealer BUSTED! You won!");
         } else if (playerHand.getSum() > computerHand.getSum()) {

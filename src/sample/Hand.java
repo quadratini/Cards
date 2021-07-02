@@ -30,14 +30,16 @@ public class Hand {
             sum += card.getNumber();
         }
 
+        int returnAces = 0;
         for (int i = 0; i < numAces; i++) {
-            sum = sum - 1;
+            sum--;
+            returnAces++;
             if ((sum + 11) <= 21) {
                 sum += 11;
-            } else {
-                break;
+                returnAces--;
             }
         }
+        sum += returnAces;
 
         return sum;
     }
